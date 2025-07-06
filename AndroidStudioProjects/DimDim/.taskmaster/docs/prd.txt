@@ -1,0 +1,262 @@
+# DimDim - Expense Management Android App
+## Product Requirements Document
+
+### 1. Product Overview
+
+**Product Name:** DimDim - Smart Expense Tracker
+
+**Vision:** An intelligent Android expense management application that automatically processes bank receipt images shared from banking apps, extracts transaction details using OCR/AI, and categorizes expenses through integration with an existing expense tracking API.
+
+**Target Users:** 
+- Individuals who frequently make bank transfers and payments
+- Users who want automated expense tracking without manual data entry
+- People seeking seamless integration between banking apps and expense management
+
+### 2. Core Features & User Stories
+
+#### 2.1 Image Receipt Processing
+**As a user, I want to share bank receipt images from my banking app to DimDim so that my expenses are automatically recorded.**
+
+**Acceptance Criteria:**
+- App appears in Android's share menu when sharing images
+- Supports common image formats (PNG, JPEG, WebP)
+- Processes images in the background without blocking UI
+- Provides feedback on processing status
+- Handles multiple image formats from different banking apps
+
+#### 2.2 OCR & Data Extraction
+**As a user, I want the app to automatically extract transaction details from receipt images so I don't need to manually enter data.**
+
+**Acceptance Criteria:**
+- Extract transaction amount, date, merchant name, and transaction type
+- Support multiple languages and banking receipt formats
+- Handle various receipt layouts and designs
+- Provide confidence scores for extracted data
+- Allow manual correction of extracted information
+
+#### 2.3 Expense Categorization & API Integration
+**As a user, I want my expenses to be automatically categorized and synced with my existing expense tracking system.**
+
+**Acceptance Criteria:**
+- Integrate with existing expense tracking API
+- Automatically categorize expenses based on merchant/description
+- Support custom category mapping
+- Handle both income and expense transactions
+- Provide real-time sync with external API
+
+#### 2.4 Review & Confirmation Interface
+**As a user, I want to review and confirm extracted transaction details before they are saved.**
+
+**Acceptance Criteria:**
+- Display extracted information in an easy-to-read format
+- Allow editing of amount, date, category, and description
+- Show confidence levels for extracted data
+- Provide quick approval/rejection options
+- Support bulk operations for multiple transactions
+
+### 3. Technical Requirements
+
+#### 3.1 Android Platform
+- **Minimum SDK:** API 29 (Android 10) - Same as current project
+- **Target SDK:** API 36 - Same as current project
+- **Architecture:** MVVM with Jetpack Compose UI
+- **Language:** Kotlin with coroutines for async operations
+
+#### 3.2 Image Processing & OCR
+- **OCR Engine:** Google ML Kit Text Recognition API (offline-first)
+- **Image Processing:** Android CameraX for image handling
+- **Backup OCR:** Cloud-based OCR service for complex receipts
+- **Image Storage:** Temporary local storage with automatic cleanup
+
+#### 3.3 API Integration
+- **HTTP Client:** Retrofit with OkHttp for API communication
+- **Authentication:** Support for API key/token-based authentication
+- **Data Format:** JSON for request/response payloads
+- **Error Handling:** Comprehensive error handling and retry logic
+- **Offline Support:** Local database for offline storage and sync
+
+#### 3.4 Data Storage
+- **Local Database:** Room for offline data persistence
+- **Image Cache:** Temporary image storage with size limits
+- **Configuration:** Shared preferences for app settings
+- **Security:** Encrypted storage for sensitive data
+
+### 4. User Experience Flow
+
+#### 4.1 Share Intent Flow
+1. User completes bank transfer and receives receipt image
+2. User shares receipt image from banking app
+3. DimDim appears in share menu
+4. User selects DimDim from share options
+5. App opens with processing screen
+
+#### 4.2 Processing Flow
+1. App receives shared image
+2. Display processing indicator
+3. Run OCR on image to extract text
+4. Parse extracted text for transaction details
+5. Apply intelligent categorization
+6. Present extracted data for review
+
+#### 4.3 Review & Confirmation Flow
+1. Display extracted transaction details
+2. Highlight low-confidence extractions
+3. Allow user to edit any field
+4. Show suggested category
+5. User confirms or rejects transaction
+6. Save to local database and sync with API
+
+### 5. Feature Specifications
+
+#### 5.1 Share Intent Integration
+- **Intent Filters:** Accept image/* MIME types
+- **Multiple Images:** Support sharing multiple receipt images
+- **Large Files:** Handle large image files efficiently
+- **Background Processing:** Process images without blocking UI
+
+#### 5.2 OCR & Text Processing
+- **Text Detection:** Extract all text from receipt images
+- **Pattern Recognition:** Identify transaction patterns (amount, date, merchant)
+- **Multi-language Support:** Handle different languages in receipts
+- **Confidence Scoring:** Provide confidence levels for each extracted field
+
+#### 5.3 Transaction Parsing
+- **Amount Extraction:** Identify transaction amounts with currency symbols
+- **Date Parsing:** Extract and normalize transaction dates
+- **Merchant Identification:** Extract merchant/payee information
+- **Transaction Type:** Distinguish between payments and receipts
+
+#### 5.4 Category Management
+- **Auto-categorization:** Automatically suggest categories based on merchant
+- **Custom Categories:** Allow users to create custom categories
+- **Learning System:** Improve categorization based on user corrections
+- **Category Mapping:** Map to existing API categories
+
+#### 5.5 API Integration Features
+- **Connection Management:** Manage API connection settings
+- **Data Synchronization:** Sync transactions with external API
+- **Conflict Resolution:** Handle conflicts between local and remote data
+- **Batch Operations:** Support bulk transaction uploads
+
+### 6. Non-Functional Requirements
+
+#### 6.1 Performance
+- **OCR Processing:** Complete within 5 seconds for typical receipts
+- **Image Loading:** Display images within 2 seconds
+- **API Calls:** Complete within 10 seconds with proper timeout handling
+- **App Launch:** Launch and be ready for use within 3 seconds
+
+#### 6.2 Security
+- **Data Encryption:** Encrypt sensitive data at rest
+- **API Security:** Secure API communication with HTTPS
+- **Image Privacy:** Automatic cleanup of processed images
+- **Permission Management:** Request minimal required permissions
+
+#### 6.3 Reliability
+- **Offline Support:** Function without internet connectivity
+- **Error Recovery:** Graceful handling of OCR and API failures
+- **Data Persistence:** Reliable local data storage
+- **Background Processing:** Stable background operations
+
+#### 6.4 Usability
+- **Intuitive Interface:** Clear and simple user interface
+- **Accessibility:** Support for screen readers and large text
+- **Feedback:** Clear progress indicators and error messages
+- **Help System:** In-app help and onboarding
+
+### 7. Implementation Phases
+
+#### Phase 1: Core Foundation (Weeks 1-2)
+- Set up project structure with Jetpack Compose
+- Implement share intent handling
+- Create basic UI components and navigation
+- Set up local database with Room
+- Implement image loading and display
+
+#### Phase 2: OCR & Processing (Weeks 3-4)
+- Integrate Google ML Kit for text recognition
+- Implement text extraction from images
+- Create transaction parsing logic
+- Build confidence scoring system
+- Implement manual correction interface
+
+#### Phase 3: API Integration (Weeks 5-6)
+- Design and implement API client
+- Create transaction sync functionality
+- Implement offline/online data management
+- Add error handling and retry logic
+- Build configuration management
+
+#### Phase 4: Smart Features (Weeks 7-8)
+- Implement auto-categorization
+- Add learning system for improved accuracy
+- Create bulk operation features
+- Implement category management
+- Add advanced parsing for complex receipts
+
+#### Phase 5: Polish & Testing (Weeks 9-10)
+- Comprehensive testing across devices
+- Performance optimization
+- Security review and improvements
+- User interface refinements
+- Documentation and help system
+
+### 8. Success Metrics
+
+#### 8.1 Technical Metrics
+- **OCR Accuracy:** >90% accuracy for amount extraction
+- **Processing Speed:** <5 seconds for typical receipt processing
+- **API Success Rate:** >95% successful API calls
+- **App Stability:** <1% crash rate
+
+#### 8.2 User Experience Metrics
+- **User Adoption:** Successful onboarding completion rate
+- **Feature Usage:** Regular use of share intent feature
+- **Data Quality:** Low rate of manual corrections needed
+- **User Satisfaction:** Positive feedback on automation features
+
+### 9. Technical Constraints & Considerations
+
+#### 9.1 OCR Limitations
+- May struggle with very poor quality images
+- Accuracy varies with different receipt formats
+- Requires fallback mechanisms for failed extractions
+
+#### 9.2 API Dependencies
+- Depends on external API availability and reliability
+- Must handle API changes and versioning
+- Requires robust error handling for API failures
+
+#### 9.3 Android Platform
+- Must comply with Android security requirements
+- Handle different screen sizes and orientations
+- Support various Android versions and manufacturers
+
+#### 9.4 Privacy & Security
+- Minimize data collection and storage
+- Secure handling of financial information
+- Compliance with data protection regulations
+
+### 10. Future Enhancements
+
+#### 10.1 Advanced Features
+- Machine learning for improved categorization
+- Receipt image enhancement for better OCR
+- Integration with multiple banking apps
+- Expense analytics and reporting
+
+#### 10.2 Platform Expansion
+- Web dashboard for expense management
+- Cross-platform sync capabilities
+- Integration with popular accounting software
+- Multi-currency support
+
+#### 10.3 AI Enhancements
+- Natural language processing for better parsing
+- Predictive categorization
+- Automatic duplicate detection
+- Smart expense splitting for shared costs
+
+---
+
+This PRD provides a comprehensive roadmap for building DimDim, focusing on the core functionality of automated expense tracking through receipt image processing while maintaining flexibility for future enhancements.
