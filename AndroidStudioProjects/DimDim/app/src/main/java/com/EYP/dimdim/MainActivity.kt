@@ -1,6 +1,7 @@
 package com.EYP.dimdim
 
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,7 +25,12 @@ class MainActivity : ComponentActivity() {
         
         // Check if we're processing shared images
         val shouldProcessImages = intent.getBooleanExtra("PROCESS_IMAGES", false)
-        val imageUris = intent.getParcelableArrayListExtra<Uri>("IMAGE_URIS")
+        val imageUris = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableArrayListExtra("IMAGE_URIS", Uri::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableArrayListExtra<Uri>("IMAGE_URIS")
+        }
         
         setContent {
             DimDimTheme {

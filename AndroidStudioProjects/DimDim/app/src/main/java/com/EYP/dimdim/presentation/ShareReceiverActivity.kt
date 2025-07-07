@@ -2,6 +2,7 @@ package com.EYP.dimdim.presentation
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.EYP.dimdim.MainActivity
 import com.EYP.dimdim.data.util.ImageInfo
 import com.EYP.dimdim.presentation.viewmodel.ShareReceiverViewModel
 import com.EYP.dimdim.ui.theme.DimDimTheme
@@ -39,9 +41,9 @@ class ShareReceiverActivity : ComponentActivity() {
                     viewModel = viewModel,
                     onProcessSelected = { imageInfoList ->
                         // Navigate to main processing flow
-                        val intent = Intent(this, MainActivity::class.java).apply {
+                        val intent = Intent(this@ShareReceiverActivity, MainActivity::class.java).apply {
                             putExtra("PROCESS_IMAGES", true)
-                            putParcelableArrayListExtra("IMAGE_URIS", ArrayList(imageInfoList.map { it.uri }))
+                            putParcelableArrayListExtra("IMAGE_URIS", ArrayList<Uri>(imageInfoList.map { it.uri }))
                         }
                         startActivity(intent)
                         finish()
@@ -66,7 +68,12 @@ class ShareReceiverActivity : ComponentActivity() {
     private fun handleSharedIntent(intent: Intent) {
         when (intent.action) {
             Intent.ACTION_SEND -> {
-                val imageUri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+                val imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+                }
                 if (imageUri != null) {
                     viewModel.processImages(listOf(imageUri))
                 } else {
@@ -74,7 +81,12 @@ class ShareReceiverActivity : ComponentActivity() {
                 }
             }
             Intent.ACTION_SEND_MULTIPLE -> {
-                val imageUris = intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
+                val imageUris = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM, Uri::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
+                }
                 if (!imageUris.isNullOrEmpty()) {
                     viewModel.processImages(imageUris)
                 } else {
@@ -114,7 +126,7 @@ fun ShareReceiverScreen(
             }
             uiState.error != null -> {
                 ErrorContent(
-                    error = uiState.error,
+                    error = uiState.error ?: "Unknown error",
                     onRetry = { viewModel.retry() },
                     onCancel = onCancel
                 )
